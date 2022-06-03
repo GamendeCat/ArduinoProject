@@ -1,9 +1,25 @@
+#include <Bounce2.h>
+
 #include <FastLED.h>
 
 #include <NintendoExtensionCtrl.h>
 
 // TCA9548A
 
+const int buttonPin = 3;
+
+/*
+  Project:
+  Een looplicht dat oplicht van de ene naar de andere kant.
+  We maken gebruik van array, for-lus en een functie om een led te laten pinken
+  Deze code is gemaakt als opdracht in het VTI-Ieper door Jules Pruvost
+  van klas 4IW, schooljaar 2020-21.
+  Alle code en methodes vallen onder de licentie Creative Common Licence:
+  https://creativecommons.org/licenses/by-nc-sa/4.0/deed.nl
+  Indien mijn code gebaseerd is op bestaande code, dan wordt de bron steeds als
+  commentaar vermeld.
+  http://dronebotworkshop.com/multiple-i2c-bus/
+*/
 //constants
 const int dataPin = 2; //geel-blauw-bruin
 const int NUM_LEDS = 67;
@@ -19,17 +35,17 @@ unsigned long timer, startTime = 0;
 unsigned long delayTime = 100;
 int ledCount = 0;
 boolean optellen = true; //true countup | false = countdown
-boolean firsTime = true;
+boolean firstTime = true;
 int score = 0;
 boolean active = true;
 boolean leftRight = true; // true = Right | false = left
 
 //libraries definen
-//Bounce2::Button button = Bounce2::Button();
-//Bounce2::Button button1 = Bounce2::Button();
+Bounce2::Button button = Bounce2::Button();
 CRGB leds[NUM_LEDS];
 Nunchuk nchuk1;
 Nunchuk nchuk2;
+
 
 void TCA9548A(uint8_t bus)
 {
@@ -40,13 +56,9 @@ void TCA9548A(uint8_t bus)
 
 void setup() {
   delay(2000);
-  /*button.attach(buttonPin, INPUT_PULLUP);
-    button.interval(5);
-    button.setPressedState(LOW);
-    button1.attach(buttonPinTwo, INPUT_PULLUP);
-    button1.interval(5);
-    button1.setPressedState(LOW);
-  */
+  button.attach(buttonPin, INPUT_PULLUP);
+  button.interval(5);
+  button.setPressedState(LOW);
 
   //ledstrip aanvoer rechts
 
@@ -56,9 +68,7 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, dataPin>(leds, NUM_LEDS);
   Serial.begin(9600);
   Serial.print("----Start Debugging----");
-  for (int i : leds) {
-    leds[i].setHSV(0, 255, 0);
-  }
+  onStart();
 
   // start nunchuk's
   TCA9548A(0);
@@ -86,7 +96,24 @@ void setup() {
   startTime = millis();
 }
 
+void onStart() {
+  for (int i : leds) {
+    leds[i].setHSV(0, 255, 0);
+  }
+}
+
 void loop() {
+  button.update();
+  if(button.fell()) {
+    optellen = true;
+    firstTime = true;
+    leftRight = true;
+    endGame();
+    onStart();
+    active = true;
+    ledCount = 0;
+  }
+  
   if (active) {
     // making 1 second (time-variables must be of type ’long’)
     //               |<------------------- delayTime ------------->|
@@ -120,7 +147,7 @@ void loop() {
           }
         }
       }
-      firsTime = false;
+      firstTime = false;
     }
 
     if (timerON) {

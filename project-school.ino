@@ -4,18 +4,6 @@
 
 // TCA9548A
 
-/*
-  Project:
-  AANPASSEN !!!! Een looplicht dat oplicht van de ene naar de andere kant.
-  We maken gebruik van array, for-lus en een functie om een led te laten pinken
-  Deze code is gemaakt als opdracht in het VTI-Ieper door Jules Pruvost
-  van klas 4IW, schooljaar 2020-21.
-  Alle code en methodes vallen onder de licentie Creative Common Licence:
-  https://creativecommons.org/licenses/by-nc-sa/4.0/deed.nl
-  Indien mijn code gebaseerd is op bestaande code, dan wordt de bron steeds als
-  commentaar vermeld.
-  http://dronebotworkshop.com/multiple-i2c-bus/
-*/
 //constants
 const int dataPin = 2; //geel-blauw-bruin
 const int NUM_LEDS = 67;
